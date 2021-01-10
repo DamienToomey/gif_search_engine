@@ -144,7 +144,7 @@ class SearchBar extends React.Component {
         onSubmit={(e) => this.handleSubmit(e)}>
           <Form.Row>
             <Col>
-              <Form.Control type="text" placeholder="Enter GIF keyswords"
+              <Form.Control type="text" placeholder="Enter GIF keywords"
               value={this.props.inputText} onChange={this.handleInputTextChange} />
             </Col>
             <Col sm={13}> {/* 13 is greater than 12 (max value) so it forces Col to minimum size to fit Button*/}

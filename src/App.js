@@ -39,7 +39,7 @@ class Gif extends React.Component {
         }
       }}>
       
-        <video src="bullshit.mp4"
+        <video src={gif["images"]["downsized_small"]["mp4"]}
             onError={this.addDefaultSrc}
           type="video/mp4" width="150px" height="150px" autoPlay muted loop>Your browser does not support the video tag.</video>
       
@@ -217,7 +217,7 @@ class App extends React.Component {
             onInputTextChange={this.handleInputTextChange}
             onSearchClick={this.handleSearchClick}
           />
-          {!this.state.isSearchClicked ? <span>Empty span</span> : this.state.gifs.length === 0 ? <Spinner animation="border" variant="primary"/> : <Gifs
+          {!this.state.isSearchClicked ? <span></span> : this.state.gifs.length === 0 ? <Spinner animation="border" variant="primary"/> : <Gifs
             gifs={this.state.gifs}
             inputText={this.state.inputText}
             onGifDisplayError={this.handleGifDisplayError}

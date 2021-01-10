@@ -1,5 +1,18 @@
 # See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
 
+# odp
+*.~lock.*
+
+# stylelint
+/css_lint_report.html
+
+# eslint
+/js_lint_report.html
+/.eslintcache
+
+# documentation
+/docs
+
 # dependencies
 /node_modules
 /.pnp
@@ -7,6 +20,7 @@
 
 # testing
 /coverage
+/reports
 
 # production
 /build

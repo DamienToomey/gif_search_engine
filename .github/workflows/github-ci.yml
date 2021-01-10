@@ -181,8 +181,11 @@ jobs:
           git add build/
           git mv build/ app/
       - name: Push folders docs and app to branch gh-pages
+        # run: |
+        #   git add docs/
+        #   git add coverage/
+        #   git commit -m "Deploying docs, build and coverage report to GitHub Pages"
+        #   git push origin gh-pages
         run: |
-          git add docs/
-          git add coverage/
-          git commit -m "Deploying docs, build and coverage report to GitHub Pages"
+          git commit -m "Deploying build to GitHub Pages"
           git push origin gh-pages

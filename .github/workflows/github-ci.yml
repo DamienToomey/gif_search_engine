@@ -1,0 +1,188 @@
+name: CI
+
+# Controls when the action will run. 
+on: 
+  # Triggers the workflow on push or pull request events but only for the master branch
+  [push, pull_request]
+
+# [Building and testing Node.js | GitHub Documentation](https://docs.github.com/en/free-pro-team@latest/actions/guides/building-and-testing-nodejs)
+# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+# jobs:
+#   lint:
+#     runs-on: ubuntu-18.04
+#     strategy:
+#       matrix:
+#         node-version: [12.x]
+#     steps:
+#       - name: Checkout branch on which commit was performed 
+#         uses: actions/checkout@v2
+#       - name: Use Node.js ${{ matrix.node-version }}
+#         uses: actions/setup-node@v1
+#         with:
+#           node-version: ${{ matrix.node-version }}
+#       - name: npm ci
+#         run: npm ci
+#       - name: npm run lint:js
+#         run: npm run lint:js src/*.js src/tests/**/*.js # src/*.js will also be linted with npm run build
+#       - name: npm run lint:css
+#         run: npm run lint:css src/*.css public/*.css
+#       - name: npm run lint:html
+#         run: npm run lint:html src/*.html public/*.html
+
+  build:
+    # needs: lint
+    runs-on: ubuntu-18.04
+    strategy:
+      matrix:
+        node-version: [12.x]
+    steps:
+      - name: Checkout branch on which commit was performed 
+        uses: actions/checkout@v2
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v1
+        with:
+          node-version: ${{ matrix.node-version }}
+      - name: npm ci
+        run: npm ci
+      - name: npm run build
+        # Why set CI=true ? # This does not seem to work
+        # "to perform a linter warning check"
+        # [Continuous Integration | Create React App Documentation](https://create-react-app.dev/docs/running-tests/#continuous-integration)
+        run: npm run build # runs linter on source code used by index.js (except test code) when the file .eslintrc exists
+      - name: Archive build as artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: build_artifact
+          path: "*build/"
+          retention-days: 1
+      
+  # tests:
+  #   runs-on: ubuntu-18.04
+  #   strategy:
+  #     matrix:
+  #       node-version: [12.x]
+  #   steps:
+  #     - name: Checkout branch on which commit was performed 
+  #       uses: actions/checkout@v2
+  #     - name: Use Node.js ${{ matrix.node-version }}
+  #       uses: actions/setup-node@v1
+  #       with:
+  #         node-version: ${{ matrix.node-version }}
+  #     - name: npm ci
+  #       run: npm ci
+  #     - name: npm test
+  #       # Why set CI=true ?
+  #       # "to run tests once and finish the process" (i.e. stop  interactive CLI)
+  #       # [Continuous Integration | Create React App Documentation](https://create-react-app.dev/docs/running-tests/#continuous-integration)
+  #       run: CI=true npm test -- --coverage --testResultsProcessor jest-sonar-reporter
+  #     - name: Archive code coverage report as artifact
+  #       uses: actions/upload-artifact@v2
+  #       with:
+  #         name: code_coverage_artifact
+  #         # Why use a wild card * ?
+  #         # "If a wildcard pattern is used, the path hierarchy
+  #         # will be preserved after the first wildcard pattern."
+  #         # [upload-artifact](https://github.com/actions/upload-artifact#upload-using-multiple-paths-and-exclusions)
+  #         path: "*coverage/"
+  #         retention-days: 1
+  #     - name: Archive Sonar compatible code coverage report as artifact
+  #       uses: actions/upload-artifact@v2
+  #       with:
+  #         name: sonar_code_coverage_artifact
+  #         path: "*reports/"
+  #         retention-days: 1
+
+  # docs:
+  #   runs-on: ubuntu-18.04
+  #   strategy:
+  #     matrix:
+  #       node-version: [12.x]
+  #   steps:
+  #     - name: Checkout branch on which commit was performed 
+  #       uses: actions/checkout@v2
+  #     - name: Use Node.js ${{ matrix.node-version }}
+  #       uses: actions/setup-node@v1
+  #       with:
+  #         node-version: ${{ matrix.node-version }}
+  #     - name: npm ci
+  #       run: npm ci
+  #     - name: npm run docs
+  #       run: npm run docs
+  #     - name: Archive generated documentation as artifact
+  #       uses: actions/upload-artifact@v2
+  #       with:
+  #         name: documentation_artifact
+  #         path: "*docs/"
+  #         retention-days: 1
+
+  # quality: # measured with SonarCloud
+  #   needs: tests
+  #   runs-on: ubuntu-latest
+  #   # Most of the code in steps is given sonarcloud.io
+  #   # when creating a new project
+  #   steps:
+  #     - name: Checkout branch on which commit was performed 
+  #       uses: actions/checkout@v2
+  #       with:
+  #         # Disabling shallow clone is recommended for improving relevancy of reporting
+  #         fetch-depth: 0
+  #     - name: Download code coverage report artifact
+  #       uses: actions/download-artifact@v2
+  #       with:
+  #         name: code_coverage_artifact
+  #     - name: Download Sonar compatible code coverage report artifact
+  #       uses: actions/download-artifact@v2
+  #       with:
+  #         name: sonar_code_coverage_artifact
+  #     - name: SonarCloud Scan
+  #       uses: sonarsource/sonarcloud-github-action@master
+  #       env:
+  #         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  #         SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+
+  deploy:
+    # needs: [build, quality, docs]
+    needs: [build]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout branch gh-pages
+        uses: actions/checkout@v2
+        with:
+          ref: gh-pages
+          # branch gh-pages has already been created by
+          # hand when setting up GitHub Pages (see README.md)
+      - name: Enter GitHub credentials
+        run: |
+          git config --global user.name 'DamienToomey'
+          git config --global user.email 'DamienToomey@users.noreply.github.com'
+          git remote set-url origin https://DamienToomey:$GITHUB_TOKEN@github.com/$GITHUB_REPOSITORY
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_REPOSITORY: ${{ github.repository }}
+        # [Push to origin from GitHub action | Stack Overflow](https://stackoverflow.com/questions/57921401/push-to-origin-from-github-action)
+      - name: Delete folders/files on branch gh-pages
+        run: git rm --ignore-unmatch -rf .
+        # Initial state of branch gh-pages is an empty branch
+        # --ignore-unmatch: exit with a zero status even if nothing matched
+      - name: Download documentation artifact
+        uses: actions/download-artifact@v2
+        with:
+          name: documentation_artifact
+      - name: Download build artifact
+        uses: actions/download-artifact@v2
+        with:
+          name: build_artifact
+      - name: Download code coverage artifact
+        uses: actions/download-artifact@v2
+        with:
+          name: code_coverage_artifact
+      - name: Rename build folder to app folder
+        run: |
+          git add build/
+          git mv build/ app/
+      - name: Push folders docs and app to branch gh-pages
+        run: |
+          git add docs/
+          git add coverage/
+          git commit -m "Deploying docs, build and coverage report to GitHub Pages"
+          git push origin gh-pages

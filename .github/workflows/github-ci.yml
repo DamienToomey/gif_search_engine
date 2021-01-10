@@ -7,7 +7,7 @@ on:
 
 # [Building and testing Node.js | GitHub Documentation](https://docs.github.com/en/free-pro-team@latest/actions/guides/building-and-testing-nodejs)
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
-# jobs:
+jobs:
 #   lint:
 #     runs-on: ubuntu-18.04
 #     strategy:

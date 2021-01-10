@@ -2,6 +2,7 @@ import {
     BrowserRouter,
     Switch,
     Route,
+    HashRouter
   } from "react-router-dom";
 
 import App from './App';
@@ -9,7 +10,7 @@ import NewPage from './NewPage';
 
 function Routes() {
     return (
-        <BrowserRouter>
+        <HashRouter basename="/">
             <div>
             <Switch>
               <Route exact={true} path="/">
@@ -20,10 +21,7 @@ function Routes() {
               </Route>
             </Switch>
             </div>
-            {/* <Redirect
-                to={{ pathname: "/", }}
-            /> */}
-        </BrowserRouter>
+        </HashRouter>
     );
   }
 

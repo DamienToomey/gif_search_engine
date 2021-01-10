@@ -164,18 +164,18 @@ jobs:
         run: git rm --ignore-unmatch -rf .
         # Initial state of branch gh-pages is an empty branch
         # --ignore-unmatch: exit with a zero status even if nothing matched
-      - name: Download documentation artifact
-        uses: actions/download-artifact@v2
-        with:
-          name: documentation_artifact
+      # - name: Download documentation artifact
+      #   uses: actions/download-artifact@v2
+      #   with:
+      #     name: documentation_artifact
       - name: Download build artifact
         uses: actions/download-artifact@v2
         with:
           name: build_artifact
-      - name: Download code coverage artifact
-        uses: actions/download-artifact@v2
-        with:
-          name: code_coverage_artifact
+      # - name: Download code coverage artifact
+      #   uses: actions/download-artifact@v2
+      #   with:
+      #     name: code_coverage_artifact
       - name: Rename build folder to app folder
         run: |
           git add build/

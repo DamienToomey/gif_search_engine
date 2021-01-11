@@ -1,0 +1,10 @@
+.display-big-gif {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 50px;
+}
+
+video {
+    margin-bottom: 20px;
+}

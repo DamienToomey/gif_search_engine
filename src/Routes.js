@@ -1,8 +1,4 @@
-import {
-    Switch,
-    Route,
-    HashRouter
-  } from "react-router-dom";
+import { Switch, Route, HashRouter } from "react-router-dom";
 
 import App from './App';
 import NewPage from './NewPage';

@@ -40,7 +40,7 @@ class Gif extends React.Component {
           }
         }}>
           {/* {gif["images"]["downsized_small"]["mp4"]} */}
-          <video src="bullshit.mp4"
+          <video src={gif["images"]["downsized_small"]["mp4"]}
                 onError={this.useDefaultSrc}
               type="video/mp4"
               width="150px"
